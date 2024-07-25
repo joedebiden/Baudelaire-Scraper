@@ -1,4 +1,7 @@
 .env
 .venv
+.vscode/
+.idea/
 __pycache__
 Note.txt
+*.session
