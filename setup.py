@@ -5,13 +5,32 @@ import time
 
 def banner():
     os.system('cls')
-    print(f"[/!\] Baudelaire scraper [/!\]")
+    print(f'''
+ _                     _      _       _ 
+| |__   __ _ _   _  __| | ___| | __ _(_)_ __ ___
+| '_ \ / _` | | | |/ _` |/ _ \ |/ _` | | '__/ _ \,
+| |_) | (_| | |_| | (_| |  __/ | (_| | | | |  __/
+|_.__/ \__,_|\__,_|\__,_|\___|_|\__,_|_|_|  \___|
+
+ _       _
+| |_ ___| | ___  __ _ _ __ __ _ _ __ ___
+| __/ _ \ |/ _ \/ _` | '__/ _` | '_ ` _ \,
+| ||  __/ |  __/ (_| | | | (_| | | | | | |
+ \__\___|_|\___|\__, |_|  \__,_|_| |_| |_|
+                |___/
+
+ ___  ___ _ __ __ _ _ __   ___ _ __
+/ __|/ __| '__/ _` | '_ \ / _ \ '__|
+\__ \ (__| | | (_| | |_) |  __/ |
+|___/\___|_|  \__,_| .__/ \___|_|
+                   |_|
+''')
     
 
 def requirements():
     def csv_lib():
         banner()
-        print("[*] Installing csv library")
+        print("[*] Installing csv library...")
         os.system('pip install cython numpy pandas')
 
     banner()
@@ -54,7 +73,6 @@ def merge_csv():
 	file1 = pd.read_csv(sys.argv[2])
 	file2 = pd.read_csv(sys.argv[3])
 	print(  '[+] merging '+sys.argv[2]+' & '+sys.argv[3]+' ...')
-	print(  '[+] big files can take some time ... ')
 	merge = file1.merge(file2, on='username')
 	merge.to_csv("output.csv", index=False)
 	print(  '[+] saved file as "output.csv"\n')
@@ -63,10 +81,9 @@ def merge_csv():
 if len(sys.argv) > 1:
     try:
         if any([sys.argv[1] == '--config', sys.argv[1] == '-c']):
-            print('[+] selected module : ' + sys.argv[1])
             config_setup()
         elif any([sys.argv[1] == '--merge', sys.argv[1] == '-m']):
-            print('[+] selected module : ' + sys.argv[1])
+            print('[+] merging selected')
             merge_csv()
         elif any([sys.argv[1] == '--install', sys.argv[1] == '-i']):
             requirements()
@@ -78,27 +95,30 @@ to merge your files do : python setup.py -m file1.csv file2.csv
 ( --config  / -c ) setup api configuration
 ( --merge   / -m ) merge 2 .csv files in one 
 ( --install / -i ) install requirements
-( --help    / -h ) show this msg 
-        """)
+        """)    
             
 
         else:
+            banner()
             print('\n[!] unknown argument : ' + sys.argv[1])
             print('[!] for help use : ')
             print(' python setup.py -h\n')
 
 
     except IndexError:
-        print('\n[!] an argument was expected but not provided')
+        banner()
+        print('\n[!] need more argument on the command, like python setup.py -m file1.csv file2.csv...')
         print('[!] for help use : ')
         print(' python setup.py -h\n')
 
 
 else:
+    banner()
     print('\n[!] no argument given')
     print('[!] for help use : ')
+    print('[!] => python setup.py -h\n')
     print('[!] and check my github page https://github.com/joedebiden/Baudelaire-Scraper')
-    print(' python setup.py -h\n')
+
 
 
 # thanks to th3unkn0n

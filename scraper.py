@@ -10,23 +10,25 @@ from dotenv import load_dotenv
 
 
 load_dotenv()
-#go to my.telegram.org
+#go to my.telegram.org for the infos
 
+'''already use config.data
 TOKEN = os.getenv('TOKEN')
 api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')
 phone = os.getenv('PHONE_NUMBER')
 client = TelegramClient(phone, api_id, api_hash)
+'''
 
 def banner():
     print(f'''
 [/!\] Baudelaire scraper [/!\]  ''')
 
-#récupération du fichier mis en place par le setup.py
+
 cpass = configparser.RawConfigParser()
 cpass.read('config.data')
 
-#bien penser à avoir le fichier .data
+#bien penser à avoir le fichier .data (suivre le setup.py)
 try:
     api_id = cpass['cred']['id']
     api_hash = cpass['cred']['hash']
@@ -35,9 +37,9 @@ try:
 
 #si le code ne le trouve pas
 except KeyError:
-    os.system('cls') #windows only /!\, attention pour du linux mettre "clear"
+    os.system('cls') #windows only /!\,
     banner()
-    print("[!] run python setup.py first !!\n")
+    print("[!] run python setup.py -h first !!\n")
     sys.exit(1)
 
 #utile pour la premier connexion, apres créé un fichier .session
@@ -56,7 +58,19 @@ last_date = None
 chunk_size = 30
 groups=[]
 
-'''
+
+
 result = client(GetDialogsRequest(
-    ....# a finir
-    '''
+             offset_date=last_date,
+             offset_id=0,
+             offset_peer=InputPeerEmpty(),
+             limit=chunk_size,
+             hash = 0
+         ))
+chats.extend(result.chats)
+
+#https://docs.telethon.dev/en/stable/basic/quick-start.html
+for chat in chats:
+    try:
+        if chat.megagroup==True:
+            groups.append(chat)
