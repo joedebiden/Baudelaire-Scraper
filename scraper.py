@@ -12,7 +12,8 @@ from dotenv import load_dotenv
 load_dotenv()
 #go to my.telegram.org for the infos
 
-'''already use config.data
+'''
+already use config.data
 TOKEN = os.getenv('TOKEN')
 api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')
@@ -58,7 +59,7 @@ try:
 except KeyError:
     os.system('cls') #windows only /!\,
     banner()
-    print("[!] run python setup.py -h first !!\n")
+    print("[!] run python setup.py -c first !!\n")
     sys.exit(1)
 
 #utile pour la premier connexion, apres créé un fichier .session
@@ -96,10 +97,10 @@ for chat in chats:
     except:
         continue
 
-print('[+] Choose a group to scrape members:')
+print('[+] Choose a group to scrape members:\n')
 i=0
 for g in groups:
-    print('[>]' + g.title)
+    print('['+str(i)+']->' + g.title)
     i+=1
 
 print('')
@@ -114,7 +115,7 @@ all_participants = client.get_participants(target_group, aggressive=True)
 print('[+] Saving In file...')
 time.sleep(1)
 with open("members.csv", "w", encoding='UTF-8') as f:
-    writer = csv.writer(f, delimiter=",", alinea="\n")
+    writer = csv.writer(f, delimiter=",", lineterminator="\n")
     writer.writerow(['username', 'user id', 'access hash', 'name', 'group', 'group id'])
     for user in all_participants:
         if user.username:

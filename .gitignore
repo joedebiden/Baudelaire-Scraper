@@ -7,3 +7,4 @@ Note.txt
 *.session
 *.data
 *.session-journal
+*.csv
