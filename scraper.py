@@ -74,8 +74,7 @@ os.system('cls')
 banner()
 chats = []
 last_date = None
-#chunk_size représente le nombre de messages à récupérer (max 30) sinon compte ban /!\
-chunk_size = 30
+chunk_size = 200    
 groups=[]
 
 
@@ -95,7 +94,7 @@ for chat in chats:
         if chat.megagroup==True:
             groups.append(chat)
     except:
-        continue
+        continue 
 
 print('[+] Choose a group to scrape members:\n')
 i=0
@@ -132,4 +131,5 @@ with open("members.csv", "w", encoding='UTF-8') as f:
             last_name= ""
         name= (first_name + ' ' + last_name).strip()
         writer.writerow([username, user.id, user.access_hash, name, target_group.title, target_group.id])
-print('[+] Members scraped successfully.')
+print('[+] Members scraped successfully.\n')
+print('[+] Please wait 5 or 10 minutes before scraping another group.')
