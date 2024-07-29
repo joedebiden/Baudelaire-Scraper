@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 from telegram import Update
 from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHandler, ContextTypes
- 
+from setup import banner
 
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
@@ -16,7 +16,8 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
-print(f"le token: {TOKEN}")
+banner()
+print("Bot is running...\n")
 
 
 
@@ -61,6 +62,28 @@ async def my_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text="Cette commande est uniquement disponible en message privé."
         )
 
+# ==== fonction pour rejoindre un channel ou groupe ====
+async def join_group(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if context.args:
+        group_id = context.args[0]
+        try:
+            await context.bot.join_chat(chat_id=group_id)
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=f"Bot a rejoint le groupe/canal avec ID {group_id}."
+            )
+        except Exception as e:
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=f"Erreur en rejoignant le groupe/canal : {e}"
+            )
+    else:
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text="Veuillez fournir un ID de groupe/canal après la commande."
+        )
+
+
 
 if __name__ == '__main__':
     application = ApplicationBuilder().token(TOKEN).build()
@@ -70,6 +93,7 @@ if __name__ == '__main__':
     echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), echo)
     caps_handler = CommandHandler('caps', caps)
     my_info_handler = CommandHandler('my_info', my_info)
+    join_group_handler = CommandHandler('join_group', join_group)
 
 
 
@@ -78,6 +102,7 @@ if __name__ == '__main__':
     application.add_handler(echo_handler)
     application.add_handler(caps_handler)
     application.add_handler(my_info_handler)
+    application.add_handler(join_group_handler)
 
     
 
