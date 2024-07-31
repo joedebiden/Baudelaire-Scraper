@@ -1,12 +1,13 @@
 import logging
 from dotenv import load_dotenv
 import os
-from telegram import Update
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHandler, ContextTypes
 from setup import banner
 
+#TO DO : patch the use of /invite command in mp cause it broke the bot, 
+# command of bot only work in group chat & mp but not in channel
 
-#a faire un mp sender (lien tg modifiable), un message bouton avec le lien du canal tg (lien modifiable)
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
 
@@ -74,55 +75,30 @@ async def my_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text="Cette commande est uniquement disponible en message privé."
         )
 
-
-
-# ==== fonction pour rejoindre un channel ou groupe ====
-async def join_group(update: Update, context: ContextTypes.DEFAULT_TYPE):
+# ==== fonction send message invite ====
+async def invite(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if context.args:
-        group_id = context.args[0]
-        try:
-            
-            await context.bot.send_message(
-                chat_id=update.effective_chat.id,
-                text=f"Bot a rejoint le groupe/canal avec ID {group_id}."
-            )
-        except Exception as e:
-            await context.bot.send_message(
-                chat_id=update.effective_chat.id,
-                text=f"Erreur en rejoignant le groupe/canal : {e}"
-            )
+        link = context.args[0]
+
+        # création des boutons inline avec le lien d'invitation
+        keyboard = [[InlineKeyboardButton("Join this", url=link)]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        # envoi du message avec le lien d'invitation
+        chat_members = await context.bot.get_chat_administrators(update.effective_chat.id)
+        for member in chat_members:
+            try: 
+                await context.bot.send_message(
+                    chat_id=member.user.id,
+                    text="Join this group is 200""%"" better",
+                    reply_markup=reply_markup
+                )
+            except Exception as e:
+                logger.error(f"error while sending messages to {member.user.id}: {e}")
     else:
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text="Veuillez fournir un ID de groupe/canal après la commande."
-        )
-
-
-# ==== fonction pour vérifier l'appartenance du bot ====
-async def check(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if context.args:
-        group_id = context.args[0]
-        try:
-            chat_member = await context.bot.get_chat_member(group_id, context.bot.id)
-            if chat_member.status in ['member', 'administrator', 'creator']:
-                await context.bot.send_message(
-                    chat_id=update.effective_chat.id,
-                    text=f"Le bot est déjà membre du groupe/canal avec ID {group_id}."
-                )
-            else:
-                await context.bot.send_message(
-                    chat_id=update.effective_chat.id,
-                    text=f"Le bot n'est pas membre du groupe/canal avec ID {group_id}."
-                )
-        except Exception as e:
-            await context.bot.send_message(
-                chat_id=update.effective_chat.id,
-                text=f"Erreur en vérifiant le groupe/canal : {e}"
-            )
-    else:
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text="Veuillez fournir un ID de groupe/canal après la commande."
+            text="Please provide a link to the group"
         )
 
 
@@ -137,8 +113,7 @@ if __name__ == '__main__':
     #echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), echo)
     #caps_handler = CommandHandler('caps', caps)
     my_info_handler = CommandHandler('my_info', my_info)
-    join_group_handler = CommandHandler('join_group', join_group)
-    check_handler = CommandHandler('check', check)
+    invite_handler = CommandHandler('invite', invite)
 
 
 
@@ -149,8 +124,7 @@ if __name__ == '__main__':
     #application.add_handler(echo_handler)
     #application.add_handler(caps_handler)
     application.add_handler(my_info_handler)
-    application.add_handler(join_group_handler)
-    application.add_handler(check_handler)
+    application.add_handler(invite_handler)
 
     
 
