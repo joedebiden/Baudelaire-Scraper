@@ -7,7 +7,7 @@ import csv
 import time
 from dotenv import load_dotenv
 
-
+#a changer => scrap channel (only scrap group) + scraping all data (message and do an algo that scrap all members not admin)
 
 load_dotenv()
 #go to my.telegram.org for the infos
