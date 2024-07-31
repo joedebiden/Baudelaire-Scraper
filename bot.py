@@ -7,6 +7,8 @@ from setup import banner
 
 #TO DO : patch the use of /invite command in mp cause it broke the bot, 
 # command of bot only work in group chat & mp but not in channel
+# carefull with the use of /invite command in mp, need to respect tos (to check)
+# security breach with the use of /invite command in group, to be able only use by admin 
 
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
@@ -33,9 +35,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ==== fonction réponse /help ====
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    help_message = (
+        "Here are the commands you can use:\n"
+        "/help - Get help\n"
+        "/my_info - Get your information\n"
+        "/invite - Invite users to a group chat\n"
+    )
     await context.bot.send_message(
         chat_id=update.effective_chat.id, 
-        text="/join_group" + "\n" + "/my_info" + "\n")
+        text=help_message
+    )
 
 
 ''' fonction inutile -> abandonnée
