@@ -47,23 +47,6 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-''' fonction inutile -> abandonnée
-# ==== fonction echo renvoi le message ====
-async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id, text=update.message.text
-        )
-
-
- fonction inutile -> abandonnée
-# ==== fonction réponse /caps ====
-async def caps(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text_caps = ' '.join(context.args).upper()
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id, text=text_caps
-        )
-'''
-
 # ==== fonction info user ====
 async def my_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.message.from_user
@@ -81,10 +64,13 @@ async def my_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text="Cette commande est uniquement disponible en message privé."
+            text="Only use in private message"
         )
 
-# ==== fonction send message invite ====
+
+
+
+# ==== fonction send private message invite ====
 async def invite(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if context.args:
         link = context.args[0]
@@ -94,7 +80,7 @@ async def invite(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup = InlineKeyboardMarkup(keyboard)
 
         # envoi du message avec le lien d'invitation
-        chat_members = await context.bot.get_chat_administrators(update.effective_chat.id)
+        chat_members = await context.bot.get_chat_member(update.effective_chat.id)
         for member in chat_members:
             try: 
                 await context.bot.send_message(
@@ -119,8 +105,6 @@ if __name__ == '__main__':
     # ==== section handler ====
     start_handler = CommandHandler('start', start) 
     help_handler = CommandHandler('help', help) 
-    #echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), echo)
-    #caps_handler = CommandHandler('caps', caps)
     my_info_handler = CommandHandler('my_info', my_info)
     invite_handler = CommandHandler('invite', invite)
 
@@ -130,8 +114,6 @@ if __name__ == '__main__':
     # ==== section application add handler ====
     application.add_handler(start_handler)
     application.add_handler(help_handler)
-    #application.add_handler(echo_handler)
-    #application.add_handler(caps_handler)
     application.add_handler(my_info_handler)
     application.add_handler(invite_handler)
 
