@@ -80,7 +80,7 @@ async def invite(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup = InlineKeyboardMarkup(keyboard)
 
         # envoi du message avec le lien d'invitation
-        chat_members = await context.bot.get_chat_member(update.effective_chat.id)
+        chat_members = await context.bot.get_chat_administrators(update.effective_chat.id)
         for member in chat_members:
             try: 
                 await context.bot.send_message(
