@@ -1,17 +1,7 @@
 import os
 import sys
 import time
-from telethon.sync import TelegramClient
-from telethon.tl.functions.messages import GetDialogsRequest
-from telethon.tl.types import InputPeerEmpty, InputPeerChannel, InputPeerUser
-from telethon.errors.rpcerrorlist import PeerFloodError, UserPrivacyRestrictedError
-from telethon.tl.functions.channels import InviteToChannelRequest
-import configparser
-import os, sys
-import csv
-import traceback
-import time
-import random
+
 
 
 def banner():
@@ -91,28 +81,39 @@ def merge_csv():
 
 #fonction a travailler pour la rendre plus clean
 def sender():
-    cpass = configparser.RawConfigParser()
-    cpass.read('config.data')
+    from telethon.sync import TelegramClient
+    from telethon.tl.types import InputPeerUser
+    from telethon.errors.rpcerrorlist import PeerFloodError
+    import configparser
+    import os, sys
+    import csv
+    import random
+    import time
+    SLEEP_TIME = 30
 
     try:
+        cpass = configparser.RawConfigParser()
+        cpass.read('config.data')
         api_id = cpass['cred']['id']
         api_hash = cpass['cred']['hash']
         phone = cpass['cred']['phone']
-        client = TelegramClient(phone, api_id, api_hash)
+
     except KeyError:
-        os.system('clear')
+        os.system('cls')
         banner()
-        print(re+"[!] run python3 setup.py first !!\n")
+        print("[!] python setup.py -h first !!\n")
         sys.exit(1)
 
+    client = TelegramClient(phone, api_id, api_hash)
+        
     client.connect()
     if not client.is_user_authorized():
         client.send_code_request(phone)
-        os.system('clear')
+        os.system('cls')
         banner()
-        client.sign_in(phone, input( '[+] Enter the code: ' ))
+        client.sign_in(phone, input('[+] Enter the code: '))
     
-    os.system('clear')
+    os.system('cls')   
     banner()
     input_file = sys.argv[1]
     users = []
@@ -126,53 +127,56 @@ def sender():
             user['access_hash'] = int(row[2])
             user['name'] = row[3]
             users.append(user)
-    
-    chats = []
-    last_date = None
-    chunk_size = 200
-    groups=[]
-    
-    result = client(GetDialogsRequest(
-                offset_date=last_date,
-                offset_id=0,
-                offset_peer=InputPeerEmpty(),
-                limit=chunk_size,
-                hash = 0
-            ))
-    chats.extend(result.chats)
-    
-    for chat in chats:
+    print("[1] send sms by user ID\n[2] send sms by username ")
+    mode = int(input("Input : "))
+        
+    message = input("[+] Enter Your Message : ")
+        
+    for user in users:
+        if mode == 2:
+            if user['username'] == "":
+                continue
+            receiver = client.get_input_entity(user['username'])
+        elif mode == 1:
+            receiver = InputPeerUser(user['id'],user['access_hash'])
+        else:
+            print("[!] Invalid Mode. Exiting.")
+            client.disconnect()
+            sys.exit()
         try:
-            if chat.megagroup== True:
-                groups.append(chat)
-        except:
+            print("[+] Sending Message to:", user['name'])
+            client.send_message(receiver, message.format(user['name']))
+            print("[+] Waiting {} seconds".format(SLEEP_TIME))
+            time.sleep(SLEEP_TIME)
+        except PeerFloodError:
+            print("[!] Getting Flood Error from telegram. \n[!] Script is stopping now. \n[!] Please try again after some time.")
+            client.disconnect()
+            sys.exit()
+        except Exception as e:
+            print("[!] Error:", e)
+            print("[!] Trying to continue...")
             continue
-    
-    i=0
-    for group in groups:
-        print( '[' +str(i)+ ']' +' - '+group.title)
-        i+=1
+    client.disconnect()
+    print("Done. Message sent to all users.")
 
-    print( '[+] Choose a group to add members')
-    g_index = input( "[+] Enter a Number : " )
-    target_group=groups[int(g_index)]
-    
-    target_group_entity = InputPeerChannel(target_group.id,target_group.access_hash)
-    
 
     #setup code main
 if len(sys.argv) > 1:
     try:
         if any([sys.argv[1] == '--config', sys.argv[1] == '-c']):
             config_setup()
+
         elif any([sys.argv[1] == '--send', sys.argv[1] == '-s']):
             print('[+] message sender selected')
             sender()
+
         elif any([sys.argv[1] == '--merge', sys.argv[1] == '-m']):
             print('[+] merging selected')
             merge_csv()
+
         elif any([sys.argv[1] == '--install', sys.argv[1] == '-i']):
             requirements()
+
         elif any([sys.argv[1] == '--help', sys.argv[1] == '-h']):
             banner()
             print("""

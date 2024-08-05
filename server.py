@@ -9,8 +9,13 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/getapi')
+def get_api():
+    return render_template('api.html')
 
-
+@app.route('/scraper')
+def scrape():
+    return render_template('/scraper.html')
 
 
 
